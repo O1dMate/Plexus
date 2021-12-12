@@ -36,9 +36,9 @@ const drawTri = (x1, y1, x2, y2, x3, y3) => triangle(x1, SCREEN_HEIGHT-y1, x2, S
 // Initial Setup
 function setup() {
 	SCREEN_WIDTH = window.innerWidth - 20;
-	SCREEN_HEIGHT = window.innerHeight - 80;
+	SCREEN_HEIGHT = window.innerHeight - 20;
 
-	createCanvas(window.innerWidth - 20, window.innerHeight - 80);
+	createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	partitionSize = Math.ceil(SCREEN_HEIGHT/Y_PARTITIONS);
 	X_PARTITIONS = Math.ceil(SCREEN_WIDTH/partitionSize);
@@ -83,14 +83,14 @@ function draw() {
 	stroke(30,30,30);
 	drawRect(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-	// Draw Points & Lines
+	// Draw Lines to Nearby Points
 	POINT_LIST.forEach(currentPoint => {
 		drawLineToNearby(currentPoint);
-		drawPoint(currentPoint);
 	});
 
-	// Update Points positions
+	// Draw Points & Update their positions
 	POINT_LIST.forEach(currentPoint => {
+		drawPoint(currentPoint);
 		currentPoint.update();
 	});
 }
@@ -170,8 +170,8 @@ class Point {
 		};
 
 		// Generate random starting direction
-		let xDir = -1 + Math.random()*2;
-		let yDir = -1 + Math.random()*2;
+		let xDir = Math.random()*2 - 1;
+		let yDir = Math.random()*2 - 1;
 		
 		// Convert to a unit vector
 		let length = Math.sqrt(xDir**2 + yDir**2);
@@ -186,12 +186,12 @@ class Point {
 		this.position.y += this.direction.y * this.moveSpeed;
 
 		// Handle going off the left & right sides of the screen
-		if (this.position.x < -0.5) this.position.x += this.backgroundSize.x;
-		else if (this.position.x > this.backgroundSize.x) this.position.x -= this.backgroundSize.x;
+		if (this.position.x < 1) this.direction.x = Math.abs(this.direction.x);
+		else if (this.position.x > this.backgroundSize.x-2) this.direction.x = -Math.abs(this.direction.x);
 
 		// Handle going off the top and bottom sides of the screen
-		if (this.position.y < -0.5) this.position.y += this.backgroundSize.y;
-		else if (this.position.y > this.backgroundSize.y) this.position.y -= this.backgroundSize.y;
+		if (this.position.y < 1) this.direction.y = Math.abs(this.direction.y);
+		else if (this.position.y > this.backgroundSize.y-2) this.direction.y = -Math.abs(this.direction.y);
 
 		this._calculatePartition();
 	}
